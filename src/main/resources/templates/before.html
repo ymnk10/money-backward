@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<a th:href="@{/money-backward/registerForm}">登録画面へ</a>
+<!-- moneyListが空でない場合に表示 -->
+<div th:if="${moneyList != null}">
+    <table>
+        <thead>
+        <tr>
+            <th>生活費</th>
+            <th>雑費</th>
+            <th>合計金額</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- moneyListの各要素をループ -->
+        <tr th:each="money : ${moneyList}">
+            <td th:text="${money.lifeMoney}"></td>
+            <td th:text="${money.otherMoney}"></td>
+            <td th:text="${money.totalMoney}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- moneyListが空の場合 -->
+<div th:if="${moneyList == null or #lists.isEmpty(moneyList)}">
+    <p>No data available.</p>
+</div>
+
+<div>
+    <h3>円グラフ:生活費と雑費の割合</h3>
+    <canvas id="moneyChart" width="300" height="300"></canvas>
+</div>
+
+<script>
+    // Canvasのサイズを指定
+    var canvas = document.getElementById('moneyChart');
+    var ctx = document.getElementById('moneyChart').getContext('2d');
+    var moneyChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Life Money', 'Other Money'],  // ラベル
+            datasets: [{
+                label: 'Money Distribution',
+                data: [
+                    /* Use the percentages for each category */
+                    [[${lifeMoneyPercentage}]],  // LifeMoneyの割合
+                    [[${otherMoneyPercentage}]]  // OtherMoneyの割合
+                ],
+                backgroundColor: ['#FF6384', '#36A2EB'],  // 色
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + '%';  // Show percentages
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
