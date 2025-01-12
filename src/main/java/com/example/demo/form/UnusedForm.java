@@ -1,2 +1,4 @@
-package com.example.demo.form;public class UnusedForm {
+package com.example.demo.form;
+
+public class UnusedForm {
 }
